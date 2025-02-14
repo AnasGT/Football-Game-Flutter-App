@@ -19,7 +19,7 @@ class _NavbarPageState extends State<NavbarPage> {
 
   // List of pages to display
   late final List<Widget> _pages = [
-    HomePage(),
+    HomePage(),  // Add default required position
     CreateTeamPage(),
     const SquadPage(),
     const ProfilePage(),

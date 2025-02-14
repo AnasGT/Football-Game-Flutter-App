@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                     itemBuilder: (context, index) {
                       final player =
                           playersByPosition[selectedPosition]![index];
-                      return InkWell(
+                      return GestureDetector(
                         onTap: () async {
                           final selectedPlayer = await Navigator.push(
                             context,
@@ -95,7 +95,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                           if (selectedPlayer != null) {
-                            // Return to generate team page with selected player
                             Navigator.pop(context, selectedPlayer);
                           }
                         },
@@ -103,27 +102,71 @@ class _HomePageState extends State<HomePage> {
                           margin: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
                           color: AppColors.darkGreenColor,
-                          child: ListTile(
-                            leading: Container(
-                              width: 50,
-                              height: 50,
-                              child: player.kitImageUrl.isNotEmpty
-                                  ? Image.network(
-                                      player.kitImageUrl,
-                                      fit: BoxFit.contain,
-                                    )
-                                  : Icon(Icons.person, color: Colors.white),
-                            ),
-                            title: Text(
-                              player.name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              '${player.position} • ${player.club} • £${player.price}M',
-                              style: const TextStyle(color: Colors.white70),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          player.name,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        player.position,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        player.club,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        '£${player.price}M',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                if (player.kitImageUrl.isNotEmpty)
+                                  Image.network(
+                                    player.kitImageUrl,
+                                    height: 80,
+                                    width: 80,
+                                    fit: BoxFit.contain,
+                                  )
+                                else
+                                  Container(
+                                    height: 80,
+                                    width: 80,
+                                    color: Colors.grey,
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),

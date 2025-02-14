@@ -3,6 +3,7 @@ import '../../models/team_info.dart';
 import '../../constants/app_colors.dart';
 import 'search_players.dart';  // Add this import
 import '../../models/player.dart';
+import 'match_generation_page.dart';
 
 class GenerateTeam extends StatefulWidget {  // Rename and convert to StatefulWidget
   final String teamName;
@@ -21,10 +22,24 @@ class GenerateTeam extends StatefulWidget {  // Rename and convert to StatefulWi
 class _GenerateTeamState extends State<GenerateTeam> {
   // Change to store players with unique position IDs
   Map<String, Player> selectedPlayers = {};
+  double budgetLeft = 100.0;  // Initialize budget to 100M
 
   // Add method to generate unique position key
   String _getPositionKey(int rowIndex, int columnIndex, int playerType) {
     return '$rowIndex-$columnIndex-${_getPositionName(playerType)}';
+  }
+
+  // Add method to update budget
+  void updateBudget(Player? player, bool isAdding) {
+    setState(() {
+      if (player != null) {
+        if (isAdding) {
+          budgetLeft -= player.price;
+        } else {
+          budgetLeft += player.price;
+        }
+      }
+    });
   }
 
   List<List<int>> _getFormationLayout() {
@@ -92,16 +107,35 @@ class _GenerateTeamState extends State<GenerateTeam> {
     final player = selectedPlayers[positionKey];
     return GestureDetector(
       onTap: () async {
+        if (player != null) {
+          updateBudget(player, false);
+        }
+        
         final selectedPlayer = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => HomePage(
+              // requiredPosition: 'ALL',  // Add this parameter
+            ),
           ),
         );
+        
         if (selectedPlayer != null) {
-          setState(() {
-            selectedPlayers[positionKey] = selectedPlayer;
-          });
+          // Check if we have enough budget
+          if (budgetLeft >= selectedPlayer.price) {
+            setState(() {
+              selectedPlayers[positionKey] = selectedPlayer;
+              updateBudget(selectedPlayer, true);
+            });
+          } else {
+            // Show error message if not enough budget
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Not enough budget to add ${selectedPlayer.name}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         }
       },
       child: SizedBox(
@@ -125,8 +159,8 @@ class _GenerateTeamState extends State<GenerateTeam> {
   @override
   Widget build(BuildContext context) {
     final teamInfo = TeamInfo(
-      budgetLeft: 57.0,
-      numberOfPlayers: 6,
+      budgetLeft: budgetLeft,  // Use the actual budget
+      numberOfPlayers: selectedPlayers.length,  // Use actual number of players
       formation: widget.formation,
     );
 
@@ -193,7 +227,7 @@ class _GenerateTeamState extends State<GenerateTeam> {
             top: 200,
             left: 0,
             right: 0,
-            bottom: 0,
+            bottom: 0,  // Remove the conditional bottom spacing
             child: Padding(  // Added this Padding widget
               padding: const EdgeInsets.only(bottom: 120.0, left: 35.0, right: 35.0, top: 30.0),  // Increased from 40.0 to 80.0
               child: Column(
@@ -233,6 +267,44 @@ class _GenerateTeamState extends State<GenerateTeam> {
               ),
             ),
           ),
+          // Generate Match Button - Overlay on top without affecting layout
+          if (selectedPlayers.length == 11)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(16),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MatchGenerationPage(
+                          teamPlayers: selectedPlayers,
+                          teamName: widget.teamName,
+                          formation: widget.formation,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.greenColor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Generate Match',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

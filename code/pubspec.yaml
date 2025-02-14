@@ -65,6 +65,7 @@ flutter:
     - assets/images/Doing sport concept.png
     - assets/images/Polygon.png
     - assets/images/Vector.png
+    - assets/images/navbaricons/
 
   fonts:
     - family: DMSans
