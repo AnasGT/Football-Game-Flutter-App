@@ -6,6 +6,7 @@ import '../../constants/app_colors.dart';
 import 'login_page.dart';
 import 'signup_page.dart';
 import 'hello_page.dart';
+import '../navbar_page.dart';  // Add this import
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -31,7 +32,7 @@ class LandingPage extends StatelessWidget {
     // Create a user document in Firestore
     User? user = userCredential.user;
     if (user != null) {
-      await FirebaseFirestore.instance.collection('player').doc(user.uid).set({
+      await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
         'uid': user.uid,
         'email': user.email,
         'displayName': user.displayName,
@@ -126,17 +127,16 @@ class LandingPage extends StatelessWidget {
                       OutlinedButton(
                         onPressed: () async {
                           try {
-                            UserCredential userCredential =
-                                await signInWithGoogle();
+                            UserCredential userCredential = await signInWithGoogle();
                             String? email = userCredential.user?.email;
-                            Navigator.push(
+                            if (!context.mounted) return;
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => HelloPage(email: email),
+                                builder: (context) => NavbarPage(email: email),
                               ),
                             );
                           } catch (e) {
-                            // Handle error
                             print(e);
                           }
                         },

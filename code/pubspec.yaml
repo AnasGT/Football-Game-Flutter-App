@@ -61,6 +61,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/logo.png
+    - assets/images/akbou_kit.png
 
   fonts:
     - family: DMSans
