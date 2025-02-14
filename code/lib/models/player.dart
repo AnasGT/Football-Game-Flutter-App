@@ -3,13 +3,20 @@ class Player {
   final String position;
   final String club;
   final double price;
-  final String? imageUrl;
 
   Player({
     required this.name,
     required this.position,
     required this.club,
     required this.price,
-    this.imageUrl,
   });
+
+  factory Player.fromJson(Map<String, dynamic> json) {
+    return Player(
+      name: json['name'] ?? '',
+      position: json['position'] ?? '',
+      club: json['club'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
+    );
+  }
 }
