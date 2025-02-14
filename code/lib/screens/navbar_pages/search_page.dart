@@ -5,13 +5,19 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Scaffold(
-        body: Center(
-          child: Text(
-            'Search Page',
-            style: TextStyle(fontSize: 24),
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/Doing sport concept.png'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black26,  // Add slight dark overlay
+              BlendMode.darken,
+            ),
           ),
+        ),
+        child: const Center(
         ),
       ),
     );

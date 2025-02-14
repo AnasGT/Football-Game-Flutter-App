@@ -62,6 +62,7 @@ flutter:
     - assets/images/
     - assets/images/logo.png
     - assets/images/akbou_kit.png
+    - assets/images/Doing sport concept.png
 
   fonts:
     - family: DMSans
