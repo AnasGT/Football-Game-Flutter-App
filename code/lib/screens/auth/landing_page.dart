@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login_page.dart';
 import 'signup_page.dart';
+import 'hello_page.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -22,7 +24,21 @@ class LandingPage extends StatelessWidget {
     );
 
     // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+    // Create a user document in Firestore
+    User? user = userCredential.user;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('player').doc(user.uid).set({
+        'uid': user.uid,
+        'email': user.email,
+        'displayName': user.displayName,
+        'photoURL': user.photoURL,
+      });
+    }
+
+    return userCredential;
   }
 
   @override
@@ -76,8 +92,14 @@ class LandingPage extends StatelessWidget {
               OutlinedButton(
                 onPressed: () async {
                   try {
-                    await signInWithGoogle();
-                    // Navigate to the next screen after successful sign-in
+                    UserCredential userCredential = await signInWithGoogle();
+                    String? email = userCredential.user?.email;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HelloPage(email: email),
+                      ),
+                    );
                   } catch (e) {
                     // Handle error
                     print(e);
