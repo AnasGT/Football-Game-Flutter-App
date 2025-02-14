@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../models/team_info.dart';
 import '../../models/saved_team.dart';
 import '../../constants/app_colors.dart';
-import '../team_creation/create_new_team_page.dart';
+import '../navbar_pages/generate_team.dart';  // Add this import
+import '../match_parameters_page.dart';  // Add this import
 
 class CreateTeamPage extends StatelessWidget {
   CreateTeamPage({super.key});
@@ -45,7 +46,7 @@ class CreateTeamPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const CreateNewTeamPage(),
+                    builder: (context) => const MatchParametersPage(),
                   ),
                 );
               },
