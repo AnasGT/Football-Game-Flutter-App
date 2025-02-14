@@ -108,6 +108,7 @@ class PlayerDetailsPage extends StatelessWidget {
                   color: AppColors.darkGreenColor,  // Change to green background
                   child: ElevatedButton(
                     onPressed: () {
+                      // Return to search page with selected player
                       Navigator.pop(context, player);
                     },
                     style: ElevatedButton.styleFrom(

@@ -2,20 +2,34 @@ import 'package:flutter/material.dart';
 import '../../models/team_info.dart';
 import '../../constants/app_colors.dart';
 import 'search_players.dart';  // Add this import
+import '../../models/player.dart';
 
-class SearchPage extends StatelessWidget {
+class GenerateTeam extends StatefulWidget {  // Rename and convert to StatefulWidget
   final String teamName;
   final String formation;
 
-  const SearchPage({
+  const GenerateTeam({
     super.key,
     required this.teamName,
     required this.formation,
   });
 
+  @override
+  State<GenerateTeam> createState() => _GenerateTeamState();
+}
+
+class _GenerateTeamState extends State<GenerateTeam> {
+  // Change to store players with unique position IDs
+  Map<String, Player> selectedPlayers = {};
+
+  // Add method to generate unique position key
+  String _getPositionKey(int rowIndex, int columnIndex, int playerType) {
+    return '$rowIndex-$columnIndex-${_getPositionName(playerType)}';
+  }
+
   List<List<int>> _getFormationLayout() {
     List<List<int>> formation;
-    switch (this.formation) {
+    switch (widget.formation) {
       case '4-3-3':
         formation = [
           List.filled(3, 2), // Forwards
@@ -74,12 +88,46 @@ class SearchPage extends StatelessWidget {
     }
   }
 
+  Widget _buildPlayerIcon(String positionKey, int playerType) {
+    final player = selectedPlayers[positionKey];
+    return GestureDetector(
+      onTap: () async {
+        final selectedPlayer = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
+        if (selectedPlayer != null) {
+          setState(() {
+            selectedPlayers[positionKey] = selectedPlayer;
+          });
+        }
+      },
+      child: SizedBox(
+        height: 35,
+        width: 35,
+        child: player?.kitImageUrl.isNotEmpty == true
+            ? Image.network(
+                player!.kitImageUrl,
+                fit: BoxFit.contain,
+              )
+            : Image.asset(
+                'assets/images/Vector.png',
+                fit: BoxFit.contain,
+                color: Colors.white,
+                colorBlendMode: BlendMode.srcIn,
+              ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final teamInfo = TeamInfo(
       budgetLeft: 57.0,
       numberOfPlayers: 6,
-      formation: formation,
+      formation: widget.formation,
     );
 
     final formationLayout = _getFormationLayout();
@@ -155,34 +203,20 @@ class SearchPage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          for (int player in formationLayout[rowIndex])
+                          for (int columnIndex = 0; columnIndex < formationLayout[rowIndex].length; columnIndex++)
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0), // Reduced vertical padding
                                 child: Column(  // Removed Container wrapper
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    GestureDetector(  // Wrap Image with GestureDetector
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => HomePage(),  // This is fine, just make sure HomePage exists
-                                          ),
-                                        );
-                                      },
-                                      child: Image.asset(
-                                        'assets/images/Vector.png',
-                                        height: 35, // Slightly reduced height
-                                        width: 35, // Slightly reduced width
-                                        fit: BoxFit.contain,
-                                        color: Colors.white,
-                                        colorBlendMode: BlendMode.srcIn,
-                                      ),
+                                    _buildPlayerIcon(
+                                      _getPositionKey(rowIndex, columnIndex, formationLayout[rowIndex][columnIndex]),
+                                      formationLayout[rowIndex][columnIndex],
                                     ),
                                     const SizedBox(height: 4), // Reduced from 8 to 4
                                     Text(
-                                      _getPositionName(player),
+                                      _getPositionName(formationLayout[rowIndex][columnIndex]),
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,

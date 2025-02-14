@@ -117,7 +117,7 @@ class _MatchParametersPageState extends State<MatchParametersPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SearchPage(
+                              builder: (context) => GenerateTeam(
                                 teamName: teamNameController.text,
                                 formation: selectedFormation,
                               ),
