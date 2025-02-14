@@ -180,6 +180,9 @@ class _SignUpPageState extends State<SignUpPage> {
                             minimumSize: const Size.fromHeight(50),
                             backgroundColor: Colors.white.withOpacity(0.2),
                             foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero,  // Makes the button rectangular
+                            ),
                           ),
                           child: const Text('Sign Up'),
                         ),
