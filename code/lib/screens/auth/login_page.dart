@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:code/screens/auth/hello_page.dart';
 import '../../constants/app_colors.dart';
+import '../navbar_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,13 +30,14 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login successful!')),
+        const SnackBar(content: Text('Login successful!')),
       );
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => HelloPage(email: _emailController.text)),
+          builder: (context) => NavbarPage(email: _emailController.text),
+        ),
       );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
