@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "949400801436-6mqs6gh8hj9q00m746ke5686jnplekfi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobai.footballgame",
+            "certificate_hash": "f3a0a70b99a6af5d88f28087d0c0668e660d290c"
+          }
+        },
+        {
           "client_id": "949400801436-q901i3l533e9mjt6hegi5363cogecrbs.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
