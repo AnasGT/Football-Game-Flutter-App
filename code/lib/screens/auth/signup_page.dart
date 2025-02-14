@@ -36,7 +36,7 @@ class _SignUpPageState extends State<SignUpPage> {
       );
 
       await FirebaseFirestore.instance
-          .collection('player')
+          .collection('user')
           .doc(userCredential.user!.uid)
           .set({
         'fullName': _nameController.text,

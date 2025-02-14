@@ -31,7 +31,7 @@ class LandingPage extends StatelessWidget {
     // Create a user document in Firestore
     User? user = userCredential.user;
     if (user != null) {
-      await FirebaseFirestore.instance.collection('player').doc(user.uid).set({
+      await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
         'uid': user.uid,
         'email': user.email,
         'displayName': user.displayName,
