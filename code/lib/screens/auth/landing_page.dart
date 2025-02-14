@@ -53,7 +53,9 @@ class LandingPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 48),  // Increased spacing at top since we removed back button
+                const SizedBox(
+                    height:
+                        48), // Increased spacing at top since we removed back button
                 // Logo
                 Image.asset(
                   'assets/images/logo.png',
@@ -83,7 +85,7 @@ class LandingPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 64),  // Add more space before buttons
+                const SizedBox(height: 64), // Add more space before buttons
                 // Buttons section
                 Expanded(
                   child: Column(
@@ -93,7 +95,8 @@ class LandingPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const LoginPage()),
+                            MaterialPageRoute(
+                                builder: (context) => const LoginPage()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -108,7 +111,8 @@ class LandingPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const SignUpPage()),
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpPage()),
                           );
                         },
                         style: OutlinedButton.styleFrom(
@@ -120,8 +124,21 @@ class LandingPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       OutlinedButton(
-                        onPressed: () {
-                          // TODO: Implement Google sign in
+                        onPressed: () async {
+                          try {
+                            UserCredential userCredential =
+                                await signInWithGoogle();
+                            String? email = userCredential.user?.email;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HelloPage(email: email),
+                              ),
+                            );
+                          } catch (e) {
+                            // Handle error
+                            print(e);
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(50),
@@ -132,34 +149,10 @@ class LandingPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),];
-                child: const Text('Sign Up'),
-              ),
-              const SizedBox(height: 16),
-              // Google sign in button
-              OutlinedButton(
-                onPressed: () async {
-                  try {
-                    UserCredential userCredential = await signInWithGoogle();
-                    String? email = userCredential.user?.email;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HelloPage(email: email),
-                      ),
-                    );
-                  } catch (e) {
-                    // Handle error
-                    print(e);
-                  }
-                },
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
                 ),
-                child: const Text('Continue with Google'),
-              ),
-              const Spacer(),
-            // ],
+                const Spacer(),
+              ],
+            ),
           ),
         ),
       ),

@@ -69,11 +69,13 @@ class _SignUpPageState extends State<SignUpPage> {
             children: [
               // App Bar replacement
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                      icon:
+                          const Icon(Icons.arrow_back_ios, color: Colors.white),
                       onPressed: () => Navigator.pop(context),
                     ),
                     const Text(
@@ -208,7 +210,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              // TODO: Implement signup logic
+                              _signUp();
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -216,7 +218,8 @@ class _SignUpPageState extends State<SignUpPage> {
                             backgroundColor: Colors.white.withOpacity(0.2),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero,  // Makes the button rectangular
+                              borderRadius: BorderRadius
+                                  .zero, // Makes the button rectangular
                             ),
                           ),
                           child: const Text('Sign Up'),
@@ -225,43 +228,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 ),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _confirmPasswordController,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm Password',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-                  if (value != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _signUp();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: const Text('Sign Up'),
               ),
             ],
           ),
