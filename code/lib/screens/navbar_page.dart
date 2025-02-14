@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'navbar_pages/home_page.dart';
-import 'navbar_pages/search_page.dart';
+import 'navbar_pages/create_team_page.dart';
 import 'navbar_pages/squad_page.dart';
 import 'navbar_pages/profile_page.dart';
 import '../constants/app_colors.dart';
@@ -20,9 +20,9 @@ class _NavbarPageState extends State<NavbarPage> {
   // List of pages to display
   late final List<Widget> _pages = [
     HomePage(),
-    SearchPage(),
-    SquadPage(),
-    ProfilePage(),
+    CreateTeamPage(),
+    const SquadPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -44,9 +44,9 @@ class _NavbarPageState extends State<NavbarPage> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.search_outlined),
-            selectedIcon: Icon(Icons.search),
-            label: 'Search',
+            icon: Icon(Icons.create_outlined),
+            selectedIcon: Icon(Icons.create),
+            label: 'Create Team',
           ),
           NavigationDestination(
             icon: Icon(Icons.people_outline),
