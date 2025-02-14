@@ -5,8 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../constants/app_colors.dart';
 import 'login_page.dart';
 import 'signup_page.dart';
-import 'hello_page.dart';
-import '../navbar_page.dart';  // Add this import
+import '../navbar_page.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
