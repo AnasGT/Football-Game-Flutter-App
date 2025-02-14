@@ -48,8 +48,7 @@ class _HomePageState extends State<HomePage> {
                   color: AppColors.darkGreenColor,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     children: [
                       for (String position in playersByPosition.keys)
                         Padding(
@@ -81,11 +80,9 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                     itemCount: playersByPosition[selectedPosition]?.length ?? 0,
                     itemBuilder: (context, index) {
-                      final player =
-                          playersByPosition[selectedPosition]![index];
+                      final player = playersByPosition[selectedPosition]![index];
                       return Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         color: AppColors.darkGreenColor,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),

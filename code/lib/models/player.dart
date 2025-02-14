@@ -11,11 +11,11 @@ class Player {
     required this.price,
   });
 
-  factory Player.fromJson(Map<String, dynamic> json) {
+  factory Player.fromJson(Map<String, dynamic> json, String clubName) {
     return Player(
       name: json['name'] ?? '',
       position: json['position'] ?? '',
-      club: json['club'] ?? '',
+      club: clubName,
       price: (json['price'] ?? 0).toDouble(),
     );
   }
