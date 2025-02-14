@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'navbar_pages/home_page.dart';
+import 'navbar_pages/search_players.dart';
 import 'team_creation/create_team_page.dart';
 import 'navbar_pages/squad_page.dart';
 import 'navbar_pages/profile_page.dart';

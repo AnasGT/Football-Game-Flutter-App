@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/team_info.dart';
 import '../../constants/app_colors.dart';
+import 'search_players.dart';  // Add this import
 
 class SearchPage extends StatelessWidget {
   final String teamName;
@@ -161,13 +162,23 @@ class SearchPage extends StatelessWidget {
                                 child: Column(  // Removed Container wrapper
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset(
-                                      'assets/images/Vector.png',
-                                      height: 35, // Slightly reduced height
-                                      width: 35, // Slightly reduced width
-                                      fit: BoxFit.contain,
-                                      color: Colors.white,
-                                      colorBlendMode: BlendMode.srcIn,
+                                    GestureDetector(  // Wrap Image with GestureDetector
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => HomePage(),  // This is fine, just make sure HomePage exists
+                                          ),
+                                        );
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/Vector.png',
+                                        height: 35, // Slightly reduced height
+                                        width: 35, // Slightly reduced width
+                                        fit: BoxFit.contain,
+                                        color: Colors.white,
+                                        colorBlendMode: BlendMode.srcIn,
+                                      ),
                                     ),
                                     const SizedBox(height: 4), // Reduced from 8 to 4
                                     Text(

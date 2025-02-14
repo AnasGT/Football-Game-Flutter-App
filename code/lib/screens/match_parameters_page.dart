@@ -40,88 +40,107 @@ class _MatchParametersPageState extends State<MatchParametersPage> {
           ),
           // Content
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    'Match Parameters',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-                  // Team Name Input
-                  TextField(
-                    controller: teamNameController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      labelText: 'Team Name',
-                      labelStyle: TextStyle(color: Colors.white),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      'Match Parameters',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+                    // Team Name Input with white background
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Formation Dropdown
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedFormation,
-                        dropdownColor: AppColors.darkGreenColor,
-                        style: const TextStyle(color: Colors.white),
-                        items: formations.map((String formation) {
-                          return DropdownMenuItem<String>(
-                            value: formation,
-                            child: Text(formation),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            setState(() {
-                              selectedFormation = newValue;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  // Continue Button
-                  ElevatedButton(
-                    onPressed: () {
-                      if (teamNameController.text.isNotEmpty) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SearchPage(
-                              teamName: teamNameController.text,
-                              formation: selectedFormation,
-                            ),
+                      child: TextField(
+                        controller: teamNameController,
+                        style: TextStyle(color: AppColors.darkGreenColor),
+                        decoration: InputDecoration(
+                          labelText: 'Team Name',
+                          labelStyle: TextStyle(color: AppColors.darkGreenColor),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
                           ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.greenColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.greenColor),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                      ),
                     ),
-                    child: const Text('Continue'),
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    // Formation Dropdown with white background
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedFormation,
+                          dropdownColor: Colors.white,
+                          style: TextStyle(color: AppColors.darkGreenColor),
+                          items: formations.map((String formation) {
+                            return DropdownMenuItem<String>(
+                              value: formation,
+                              child: Text(formation),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                selectedFormation = newValue;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    // Continue Button with white background
+                    ElevatedButton(
+                      onPressed: () {
+                        if (teamNameController.text.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SearchPage(
+                                teamName: teamNameController.text,
+                                formation: selectedFormation,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.darkGreenColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        elevation: 2,
+                      ),
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
