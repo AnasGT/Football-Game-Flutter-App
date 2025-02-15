@@ -14,38 +14,88 @@ class _ProfilePageState extends State<ProfilePage> {
   final user = FirebaseAuth.instance.currentUser;
   final _firestore = FirebaseFirestore.instance;
 
-  Future<Map<String, dynamic>> _getStats() async {
-    final matchResults = await _firestore
-        .collection('match_results')
-        .where('userId', isEqualTo: user?.uid)
-        .get();
+  Future<Map<String, dynamic>> _getUserProfile() async {
+    try {
+      if (user == null) return {};
 
-    int totalMatches = matchResults.docs.length;
-    int totalPoints = 0;
-    int wins = 0;
-    int draws = 0;
-    int losses = 0;
-
-    for (var doc in matchResults.docs) {
-      final data = doc.data();
-      totalPoints += data['totalPoints'] as int;
+      final userDoc = await _firestore.collection('users').doc(user!.uid).get();
       
-      int teamScore = data['teamScore'] as int;
-      int opponentScore = data['opponentScore'] as int;
+      if (!userDoc.exists) {
+        // Create default profile if it doesn't exist
+        final defaultData = {
+          'displayName': user?.displayName ?? 'Football Manager',
+          'email': user?.email,
+          'photoURL': user?.photoURL,
+          'totalMatches': 0,
+          'totalPoints': 0,
+          'wins': 0,
+          'draws': 0,
+          'losses': 0,
+          'createdAt': Timestamp.now(),
+        };
+        
+        await _firestore.collection('users').doc(user!.uid).set(defaultData);
+        return defaultData;
+      }
       
-      if (teamScore > opponentScore) wins++;
-      else if (teamScore == opponentScore) draws++;
-      else losses++;
+      // Merge Firestore data with current user data
+      final userData = userDoc.data() ?? {};
+      return {
+        ...userData,
+        'displayName': user?.displayName ?? userData['displayName'] ?? 'Football Manager',
+        'email': user?.email ?? userData['email'] ?? '',
+        'photoURL': user?.photoURL ?? userData['photoURL'] ?? '',
+      };
+    } catch (e) {
+      print('Error fetching user profile: $e');
+      return {
+        'displayName': user?.displayName ?? 'Football Manager',
+        'email': user?.email ?? '',
+        'photoURL': user?.photoURL ?? '',
+        'totalMatches': 0,
+        'totalPoints': 0,
+        'wins': 0,
+        'draws': 0,
+        'losses': 0,
+      };
     }
+  }
 
-    return {
-      'totalMatches': totalMatches,
-      'totalPoints': totalPoints,
-      'wins': wins,
-      'draws': draws,
-      'losses': losses,
-      'winRate': totalMatches > 0 ? (wins / totalMatches * 100).toStringAsFixed(1) : '0',
-    };
+  Stream<Map<String, dynamic>> _getUserStats() {
+    if (user == null) return Stream.value({});
+
+    return _firestore
+        .collection('match_results')
+        .where('userId', isEqualTo: user!.uid)
+        .snapshots()
+        .map((snapshot) {
+      int totalMatches = snapshot.docs.length;
+      int totalPoints = 0;
+      int wins = 0;
+      int draws = 0;
+      int losses = 0;
+
+      for (var doc in snapshot.docs) {
+        final data = doc.data();
+        totalPoints += data['totalPoints'] as int;
+        
+        int teamScore = data['teamScore'] as int;
+        int opponentScore = data['opponentScore'] as int;
+        
+        if (teamScore > opponentScore) wins++;
+        else if (teamScore == opponentScore) draws++;
+        else losses++;
+      }
+
+      return {
+        'totalMatches': totalMatches,
+        'totalPoints': totalPoints,
+        'wins': wins,
+        'draws': draws,
+        'losses': losses,
+        'winRate': totalMatches > 0 ? (wins / totalMatches * 100).toStringAsFixed(1) : '0',
+      };
+    });
   }
 
   @override
@@ -56,58 +106,76 @@ class _ProfilePageState extends State<ProfilePage> {
           image: DecorationImage(
             image: AssetImage('assets/images/backgroun.png'),
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black54,
-              BlendMode.darken,
-            ),
+            colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Profile Header
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage(
-                          user?.photoURL ?? 
-                          'https://example.com/default-avatar.png',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        user?.displayName ?? 'Football Manager',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        user?.email ?? '',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+          child: StreamBuilder<Map<String, dynamic>>(
+            stream: _getUserStats(),
+            builder: (context, statsSnapshot) {
+              if (statsSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                // Stats Section
-                FutureBuilder<Map<String, dynamic>>(
-                  future: _getStats(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+              final stats = statsSnapshot.data ?? {
+                'totalMatches': 0,
+                'totalPoints': 0,
+                'wins': 0,
+                'draws': 0,
+                'losses': 0,
+                'winRate': '0',
+              };
 
-                    final stats = snapshot.data!;
-                    return Container(
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // Profile Header
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: NetworkImage(
+                              user?.photoURL ?? 'assets/images/Vector.png',
+                            ),
+                            onBackgroundImageError: (_, __) {
+                              // Handle image load error
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            user?.displayName ?? 'Football Manager',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            user?.email ?? '',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (user?.favoriteTeam?.isNotEmpty ?? false)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                'Favorite Team: ${user?.favoriteTeam}',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    // Stats Section
+                    Container(
                       margin: const EdgeInsets.all(20),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -117,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         children: [
                           const Text(
-                            'Manager Statistics',
+                            'Career Statistics',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -144,50 +212,55 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
-                    );
-                  },
-                ),
+                    ),
 
-                // Settings Section
-                Container(
-                  margin: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.black45,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildSettingsItem(
-                        icon: Icons.person_outline,
-                        title: 'Edit Profile',
-                        onTap: () {
-                          // TODO: Implement edit profile
-                        },
+                    // Settings Section
+                    Container(
+                      margin: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      _buildSettingsItem(
-                        icon: Icons.notifications_outlined,
-                        title: 'Notifications',
-                        onTap: () {
-                          // TODO: Implement notifications
-                        },
+                      child: Column(
+                        children: [
+                          _buildSettingsItem(
+                            icon: Icons.person_outline,
+                            title: 'Edit Profile',
+                            onTap: () {
+                              // TODO: Implement edit profile
+                            },
+                          ),
+                          _buildSettingsItem(
+                            icon: Icons.notifications_outlined,
+                            title: 'Notifications',
+                            onTap: () {
+                              // TODO: Implement notifications
+                            },
+                          ),
+                          _buildSettingsItem(
+                            icon: Icons.logout,
+                            title: 'Sign Out',
+                            onTap: () async {
+                              await FirebaseAuth.instance.signOut();
+                              Navigator.of(context).pushReplacementNamed('/login');
+                            },
+                          ),
+                        ],
                       ),
-                      _buildSettingsItem(
-                        icon: Icons.logout,
-                        title: 'Sign Out',
-                        onTap: () async {
-                          await FirebaseAuth.instance.signOut();
-                          Navigator.of(context).pushReplacementNamed('/login');
-                        },
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
     );
+  }
+
+  String _calculateWinRate(int wins, int totalMatches) {
+    if (totalMatches == 0) return '0';
+    return ((wins / totalMatches) * 100).toStringAsFixed(1);
   }
 
   Widget _buildStatItem(String label, String value, {Color? color}) {

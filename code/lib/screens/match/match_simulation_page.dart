@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/player.dart';
 import '../../constants/app_colors.dart';
 import '../../models/match_result_data.dart';
@@ -109,32 +110,38 @@ class _MatchSimulationPageState extends State<MatchSimulationPage> {
 
   Future<void> _saveMatchResult() async {
     try {
-      final List<PlayerMatchStats> playerMatchStats = [];
-      
-      widget.teamPlayers.forEach((key, player) {
-        final stats = playerStats[key]!;
-        playerMatchStats.add(PlayerMatchStats(
-          playerName: player.name,
-          position: player.position,
-          goals: stats.goals,
-          assists: stats.assists,
-          yellowCards: stats.yellowCards,
-          redCards: stats.redCards,
-          cleanSheet: stats.cleanSheet,
-          points: stats.calculatePoints(),
-        ));
-      });
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
 
+      // Create match result document
       await FirebaseFirestore.instance.collection('match_results').add({
+        'userId': user.uid,
         'teamName': widget.teamName,
         'teamScore': matchResult.teamScore,
         'opponentScore': matchResult.opponentScore,
         'totalPoints': matchResult.totalPoints,
         'playedAt': Timestamp.now(),
-        'playerStats': playerMatchStats.map((stat) => stat.toMap()).toList(),
+        'playerStats': playerStats.entries.map((entry) {
+          final player = widget.teamPlayers[entry.key]!;
+          final stats = entry.value;
+          return {
+            'playerName': player.name,
+            'position': player.position,
+            'goals': stats.goals,
+            'assists': stats.assists,
+            'yellowCards': stats.yellowCards,
+            'redCards': stats.redCards,
+            'cleanSheet': stats.cleanSheet,
+            'points': stats.calculatePoints(),
+          };
+        }).toList(),
       });
+
     } catch (e) {
       print('Error saving match result: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error saving match result')),
+      );
     }
   }
 
