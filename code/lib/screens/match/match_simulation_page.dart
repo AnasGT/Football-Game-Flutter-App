@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import '../../models/player.dart';
 import '../../constants/app_colors.dart';
+import '../../models/match_result_data.dart';
 
 class MatchSimulationPage extends StatefulWidget {
   final Map<String, Player> teamPlayers;
@@ -103,6 +105,37 @@ class _MatchSimulationPageState extends State<MatchSimulationPage> {
         });
       }
     });
+  }
+
+  Future<void> _saveMatchResult() async {
+    try {
+      final List<PlayerMatchStats> playerMatchStats = [];
+      
+      widget.teamPlayers.forEach((key, player) {
+        final stats = playerStats[key]!;
+        playerMatchStats.add(PlayerMatchStats(
+          playerName: player.name,
+          position: player.position,
+          goals: stats.goals,
+          assists: stats.assists,
+          yellowCards: stats.yellowCards,
+          redCards: stats.redCards,
+          cleanSheet: stats.cleanSheet,
+          points: stats.calculatePoints(),
+        ));
+      });
+
+      await FirebaseFirestore.instance.collection('match_results').add({
+        'teamName': widget.teamName,
+        'teamScore': matchResult.teamScore,
+        'opponentScore': matchResult.opponentScore,
+        'totalPoints': matchResult.totalPoints,
+        'playedAt': Timestamp.now(),
+        'playerStats': playerMatchStats.map((stat) => stat.toMap()).toList(),
+      });
+    } catch (e) {
+      print('Error saving match result: $e');
+    }
   }
 
   @override
@@ -251,7 +284,8 @@ class _MatchSimulationPageState extends State<MatchSimulationPage> {
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          await _saveMatchResult();
                           Navigator.of(context).popUntil((route) => route.isFirst);
                         },
                         style: ElevatedButton.styleFrom(

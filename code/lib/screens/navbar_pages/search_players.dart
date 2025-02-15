@@ -5,7 +5,12 @@ import '../../services/player_service.dart';
 import '../navbar_pages/player_details_page.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  final String requiredPosition;
+
+  const HomePage({
+    super.key,
+    this.requiredPosition = 'ALL',  // Add default value
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,6 +20,18 @@ class _HomePageState extends State<HomePage> {
   String selectedPosition = 'Forwards';
   Map<String, List<Player>> playersByPosition = {};
   bool isLoading = true;
+  String searchQuery = '';  // Add search query
+
+  // Add filtered players getter
+  List<Player> get filteredPlayers {
+    final players = playersByPosition[selectedPosition] ?? [];
+    if (searchQuery.isEmpty) return players;
+    
+    return players.where((player) =>
+      player.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+      player.club.toLowerCase().contains(searchQuery.toLowerCase())
+    ).toList();
+  }
 
   @override
   void initState() {
@@ -43,6 +60,34 @@ class _HomePageState extends State<HomePage> {
           ? Center(child: CircularProgressIndicator())
           : Column(
               children: [
+                // Add Search Bar
+                Container(
+                  color: AppColors.darkGreenColor,
+                  padding: const EdgeInsets.all(12),
+                  child: TextField(
+                    onChanged: (value) => setState(() => searchQuery = value),
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Search players or clubs...',
+                      hintStyle: const TextStyle(color: Colors.white60),
+                      prefixIcon: const Icon(Icons.search, color: Colors.white70),
+                      filled: true,
+                      fillColor: AppColors.darkGreenColor.withOpacity(0.5),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.greenColor),
+                      ),
+                    ),
+                  ),
+                ),
                 // Position filter list
                 Container(
                   height: 60,
@@ -80,10 +125,9 @@ class _HomePageState extends State<HomePage> {
                 // Players list
                 Expanded(
                   child: ListView.builder(
-                    itemCount: playersByPosition[selectedPosition]?.length ?? 0,
+                    itemCount: filteredPlayers.length,
                     itemBuilder: (context, index) {
-                      final player =
-                          playersByPosition[selectedPosition]![index];
+                      final player = filteredPlayers[index];
                       return GestureDetector(
                         onTap: () async {
                           final selectedPlayer = await Navigator.push(

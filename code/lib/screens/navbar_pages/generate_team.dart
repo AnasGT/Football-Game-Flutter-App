@@ -115,7 +115,7 @@ class _GenerateTeamState extends State<GenerateTeam> {
           context,
           MaterialPageRoute(
             builder: (context) => HomePage(
-              // requiredPosition: 'ALL',  // Add this parameter
+              requiredPosition: _getPositionName(playerType),  // Pass the correct position
             ),
           ),
         );
