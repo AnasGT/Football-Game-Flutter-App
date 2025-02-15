@@ -25,59 +25,51 @@ class PlayerDetailsPage extends StatelessWidget {
           // Content
           Column(
             children: [
-              // Top section with player info
+              // Moved image to top
               Container(
-                padding: const EdgeInsets.all(16),
-                child: Row(
+                width: 120,
+                height: 120,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: player.kitImageUrl.isNotEmpty
+                      ? Image.network(
+                          player.kitImageUrl,
+                          fit: BoxFit.contain,
+                        )
+                      : const Icon(
+                          Icons.person,
+                          size: 80,
+                          color: Colors.grey,
+                        ),
+                ),
+              ),
+              // Player info section
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),  // Increased horizontal padding
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Left side - Player details
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Centered name
-                          Center(
-                            child: Text(
-                              player.name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          // Left-aligned details
-                          _buildDetailRow('Position:', player.position),
-                          const SizedBox(height: 8),
-                          _buildDetailRow('Club:', player.club),
-                          const SizedBox(height: 8),
-                          _buildDetailRow('Price:', '£${player.price}M'),
-                        ],
-                      ),
-                    ),
-                    // Right side - Player image
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
+                    Text(
+                      player.name,
+                      style: const TextStyle(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: player.kitImageUrl.isNotEmpty
-                            ? Image.network(
-                                player.kitImageUrl,
-                                fit: BoxFit.contain,
-                              )
-                            : const Icon(
-                                Icons.person,
-                                size: 80,
-                                color: Colors.grey,
-                              ),
-                      ),
+                      textAlign: TextAlign.center,  // Center align text
+                      overflow: TextOverflow.ellipsis,  // Add overflow handling
                     ),
+                    const SizedBox(height: 20),
+                    _buildDetailRow('Position:', player.position),
+                    const SizedBox(height: 8),
+                    _buildDetailRow('Club:', player.club),
+                    const SizedBox(height: 8),
+                    _buildDetailRow('Price:', '£${player.price}M'),
                   ],
                 ),
               ),
@@ -138,6 +130,7 @@ class PlayerDetailsPage extends StatelessWidget {
 
   Widget _buildDetailRow(String label, String value) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,  // Center the row
       children: [
         Text(
           label,
@@ -147,12 +140,16 @@ class PlayerDetailsPage extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+        Flexible(  // Add Flexible widget
+          child: Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            overflow: TextOverflow.ellipsis,  // Add text overflow handling
+            maxLines: 1,  // Limit to one line
           ),
         ),
       ],
