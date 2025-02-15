@@ -139,7 +139,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.grey[900],
-                            backgroundImage: AssetImage('assets/images/Vector.png'),
+                            backgroundImage: user?.photoURL != null
+                                ? NetworkImage(user!.photoURL!)
+                                : const AssetImage('assets/images/Vector.png') as ImageProvider,
+                            child: user?.photoURL == null
+                                ? const Icon(Icons.person, size: 50, color: Colors.white70)
+                                : null,
                           ),
                           const SizedBox(height: 16),
                           Text(
