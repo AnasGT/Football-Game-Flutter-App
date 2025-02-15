@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../constants/app_colors.dart';
+import '../auth/landing_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -283,7 +285,42 @@ class _ProfilePageState extends State<ProfilePage> {
         style: const TextStyle(color: Colors.white),
       ),
       trailing: const Icon(Icons.chevron_right, color: Colors.white70),
-      onTap: onTap,
+      onTap: () async {
+        if (title == 'Sign Out') {
+          try {
+            final googleSignIn = GoogleSignIn();
+            
+            // First check if signed in with Google and sign out
+            if (await googleSignIn.isSignedIn()) {
+              await googleSignIn.disconnect().catchError((_) {});
+              await googleSignIn.signOut().catchError((_) {});
+            }
+            
+            // Then sign out from Firebase
+            await FirebaseAuth.instance.signOut();
+
+            if (context.mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LandingPage()),
+                (Route<dynamic> route) => false,
+              );
+            }
+          } catch (e) {
+            print('Error signing out: $e');
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error signing out: ${e.toString()}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        } else {
+          onTap();
+        }
+      },
     );
   }
 }

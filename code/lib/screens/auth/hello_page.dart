@@ -5,17 +5,45 @@ import 'landing_page.dart';
 
 class HelloPage extends StatelessWidget {
   final String? email;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  const HelloPage({Key? key, this.email}) : super(key: key);
+  HelloPage({Key? key, this.email}) : super(key: key);
 
   Future<void> _signOut(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    await GoogleSignIn().signOut();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LandingPage()),
-      (Route<dynamic> route) => false,
-    );
+    try {
+      // Check if user is signed in with Google
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser != null) {
+        await _googleSignIn.disconnect();
+      }
+
+      // Sign out from Firebase
+      await _auth.signOut();
+
+      // Clear any stored credentials
+      await _googleSignIn.signOut();
+
+      // Navigate to landing page and remove all previous routes
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LandingPage()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    } catch (e) {
+      print('Error signing out: $e');
+      // Show error message to user
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error signing out: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override

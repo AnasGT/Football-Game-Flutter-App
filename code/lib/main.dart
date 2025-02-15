@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/welcome_page.dart';
+import 'screens/auth/landing_page.dart';  // Add this import
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      home: const WelcomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const WelcomePage(),
+        '/landing': (context) => const LandingPage(),
+      },
     );
   }
 }
