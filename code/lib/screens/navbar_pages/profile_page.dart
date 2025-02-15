@@ -136,12 +136,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           CircleAvatar(
                             radius: 50,
-                            backgroundImage: NetworkImage(
-                              user?.photoURL ?? 'assets/images/Vector.png',
-                            ),
-                            onBackgroundImageError: (_, __) {
-                              // Handle image load error
-                            },
+                            backgroundColor: Colors.grey[900],
+                            backgroundImage: AssetImage('assets/images/Vector.png'),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -159,17 +155,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               fontSize: 16,
                             ),
                           ),
-                          if (user?.favoriteTeam?.isNotEmpty ?? false)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: Text(
-                                'Favorite Team: ${user?.favoriteTeam}',
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
                         ],
                       ),
                     ),
